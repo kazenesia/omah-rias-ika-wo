@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login — Omah Rias Ika</title>
+  {% include 'partials/tailwind_config.html' %}
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/styles.css" />
+</head>
+<body class="font-body min-h-screen flex items-center justify-center bg-espresso grain">
+  <div class="absolute inset-0 opacity-20" style="background: radial-gradient(ellipse at 30% 20%, #7A3F4E 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, #C9956C 0%, transparent 50%);"></div>
+
+  <div class="relative z-10 w-full max-w-md px-4">
+    <div class="text-center mb-8">
+      <span class="font-display text-3xl font-bold text-rosegold-light">Omah Rias Ika</span>
+      <p class="text-white/50 text-sm mt-2 tracking-widest uppercase">Admin Panel</p>
+    </div>
+
+    <div class="card p-8">
+      <h2 class="font-display text-2xl font-bold text-espresso text-center mb-6">Selamat Datang</h2>
+      <form method="POST" action="{% url 'core:admin_login' %}" class="space-y-5">
+        {% csrf_token %}
+        {% if form.errors %}
+        <div class="p-3 bg-red-50 text-red-600 rounded-xl text-sm text-center">Username atau password salah.</div>
+        {% endif %}
+        <div>
+          <label class="block text-sm font-medium mb-2">Username</label>
+          <input name="username" type="text" required class="form-input" placeholder="admin" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-2">Password</label>
+          <input name="password" type="password" required class="form-input" placeholder="••••••••" />
+        </div>
+        <button type="submit" class="btn-primary w-full py-3.5">Masuk</button>
+      </form>
+    </div>
+
+    <div class="text-center mt-6">
+      <a href="/" class="text-white/40 hover:text-rosegold text-sm transition">← Kembali ke Website</a>
+    </div>
+  </div>
+</body>
+</html>

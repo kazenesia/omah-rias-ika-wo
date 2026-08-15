@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Catalog - Admin Omah Rias Ika</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              gold: {
+                50: "#FDF8E6",
+                100: "#FBF1CD",
+                200: "#F6E39B",
+                300: "#F1D569",
+                400: "#D4AF37" /* Base Champagne Gold */,
+                500: "#B38F24",
+                600: "#92741D",
+              },
+              charcoal: "#062D24" /* Deep Emerald */,
+              "warm-white": "#FDFCF8" /* Ivory Silk */,
+              "white-smoke": "#F5F5F5",
+              slate: "#2C3E50" /* Midnight Slate */,
+            },
+            fontFamily: {
+              display: ["Playfair Display", "serif"],
+              body: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #D4AF37;
+        border-radius: 10px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #B38F24;
+      }
+    </style>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+
+  <body class="font-body bg-cream text-espresso" x-data="adminCatalog()">
+    <div class="min-h-screen">
+      <!-- Mobile Sidebar Overlay -->
+      <div
+        x-show="sidebarOpen"
+        x-transition:enter="transition-opacity ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition-opacity ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 bg-black/50 z-40 lg:hidden"
+        @click="sidebarOpen = false"
+      ></div>
+
+      <!-- Sidebar -->
+      <aside
+        :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
+        class="fixed top-0 left-0 h-full w-64 admin-sidebar text-white z-50 transition-transform duration-300 lg:translate-x-0"
+      >
+        <!-- Logo -->
+        <div
+          class="p-4 border-b border-charcoal/20 flex items-center justify-between"
+        >
+          <div class="flex items-center space-x-2">
+            <span class="text-2xl">💒</span>
+            <span class="font-display text-xl font-bold text-rosegold-light"
+              >Omah Rias Ika</span
+            >
+          </div>
+          <button
+            @click="sidebarOpen = false"
+            class="lg:hidden p-1 hover:bg-gray-700 rounded"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="p-4 space-y-2">
+          <a
+            href="/admin-panel/dashboard/"
+            :class="currentPage === 'dashboard' ? 'bg-wine/20 text-rosegold-light' : 'text-slate-300 hover:bg-wine/10 hover:text-gold-100 transition'"
+            class="flex items-center space-x-3 px-4 py-3 rounded-xl"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              />
+            </svg>
+            <span>Dashboard</span>
+          </a>
+          <a
+            href="/admin-panel/orders/"
+            :class="currentPage === 'orders' ? 'bg-wine/20 text-rosegold-light' : 'text-slate-300 hover:bg-wine/10 hover:text-gold-100 transition'"
+            class="flex items-center space-x-3 px-4 py-3 rounded-xl"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+              />
+            </svg>
+            <span>Orders</span>
+          </a>
+          <a
+            href="/admin-panel/catalog/"
+            :class="currentPage === 'catalog' ? 'bg-wine/20 text-rosegold-light' : 'text-slate-300 hover:bg-wine/10 hover:text-gold-100 transition'"
+            class="flex items-center space-x-3 px-4 py-3 rounded-xl"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+              />
+            </svg>
+            <span>Katalog</span>
+          </a>
+          <a
+            href="/admin-panel/packages/"
+            :class="currentPage === 'packages' ? 'bg-wine/20 text-rosegold-light' : 'text-slate-300 hover:bg-wine/10 hover:text-gold-100 transition'"
+            class="flex items-center space-x-3 px-4 py-3 rounded-xl"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+              />
+            </svg>
+            <span>Paket</span>
+          </a>
+          <a
+            href="/admin-panel/gallery/"
+            :class="currentPage === 'gallery' ? 'bg-wine/20 text-rosegold-light' : 'text-slate-300 hover:bg-wine/10 hover:text-gold-100 transition'"
+            class="flex items-center space-x-3 px-4 py-3 rounded-xl"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+            <span>Gallery</span>
+          </a>
+          <div class="pt-4 mt-4 border-t border-charcoal/20">
+            <form method="post" action="/admin-panel/logout/">
+              {% csrf_token %}
+              <button
+                type="submit"
+                class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-400 hover:bg-red-500/20 hover:text-red-400 transition"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
+                </svg>
+                <span>Logout</span>
+              </button>
+            </form>
+          </div>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="lg:ml-64 min-h-screen">
+        <!-- Top Bar -->
+        <header
+          class="bg-cream shadow-sm sticky top-0 z-20 border-b border-gray-200/50"
+        >
+          <div class="flex items-center justify-between px-4 sm:px-6 py-4">
+            <div class="flex items-center space-x-3">
+              <button
+                @click="sidebarOpen = true"
+                class="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition"
+              >
+                <svg
+                  class="w-6 h-6 text-gray-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
+              </button>
+              <h1 class="text-lg sm:text-xl font-semibold text-espresso">
+                Catalog
+              </h1>
+            </div>
+            <div class="flex items-center space-x-2 sm:space-x-4">
+              <button
+                class="relative p-2 hover:bg-gray-100 rounded-lg transition"
+              >
+                <svg
+                  class="w-5 h-5 text-gray-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                  />
+                </svg>
+                <span
+                  class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"
+                ></span>
+              </button>
+              <div class="flex items-center space-x-2">
+                <div
+                  class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-wine flex items-center justify-center text-white font-semibold text-sm"
+                >
+                  A
+                </div>
+                <span class="hidden sm:block text-sm font-medium text-espresso"
+                  >Admin</span
+                >
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div class="p-6">
+          <!-- Category Tabs -->
+          <div class="flex flex-wrap justify-center gap-2 mb-6">
+            <template x-for="cat in categories" :key="cat.id">
+              <button
+                @click="activeCategory = cat.id"
+                :class="activeCategory === cat.id ? 'bg-wine text-white shadow-lg' : 'bg-white text-gray-600 hover:bg-gold-50'"
+                class="px-5 py-2.5 rounded-full font-medium flex items-center space-x-2 transition shadow-sm"
+              >
+                <img :src="cat.iconPath" class="w-5 h-5 opacity-80" />
+                <span x-text="cat.name"></span>
+              </button>
+            </template>
+          </div>
+
+          <!-- Items Grid -->
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <template x-for="item in filteredItems" :key="item.id">
+              <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+                <div class="h-40 bg-gray-100 flex items-center justify-center relative overflow-hidden">
+                  <template x-if="item.image">
+                    <img :src="item.image" class="w-full h-full object-cover">
+                  </template>
+                  <template x-if="!item.image">
+                    <span class="text-4xl">📷</span>
+                  </template>
+                </div>
+                <div class="p-4">
+                  <div class="flex items-center justify-between mb-2">
+                    <h3 class="font-semibold text-espresso" x-text="item.name"></h3>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" x-model="item.active" @change="toggleStatus(item)" class="sr-only peer" />
+                      <div class="w-9 h-5 bg-gray-200 peer-focus:ring-2 peer-focus:ring-gold-300 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-wine"></div>
+                    </label>
+                  </div>
+                  <p class="text-gold-500 font-bold mb-3" x-text="item.price_range"></p>
+                  <p class="text-xs text-gray-500 mb-4 line-clamp-2" x-text="item.description"></p>
+                  <div class="flex space-x-2">
+                    <button @click="openEditModal(item)" class="flex-1 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition font-medium">Edit</button>
+                    <button @click="deleteItem(item)" class="px-3 py-2 text-red-500 hover:bg-red-50 rounded-lg transition">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </template>
+
+            <!-- Add New Card -->
+            <div @click="openAddModal()" class="bg-white rounded-2xl shadow-sm border-2 border-dashed border-gray-200 flex items-center justify-center min-h-[280px] hover:border-gold-400 transition cursor-pointer group">
+              <div class="text-center">
+                <div class="w-12 h-12 rounded-full bg-gold-100 flex items-center justify-center mx-auto mb-3 group-hover:bg-gold-200 transition">
+                  <svg class="w-6 h-6 text-gold-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                </div>
+                <p class="text-gray-500 font-medium">Add New Item</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div x-show="isModalOpen" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" @click="closeModal()"></div>
+      <div class="bg-white rounded-2xl w-full max-w-lg z-10 shadow-2xl relative max-h-[85vh] flex flex-col overflow-hidden border border-gold-200">
+        <!-- Modal Header -->
+        <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-cream text-left">
+          <h2 class="text-xl font-bold text-espresso flex items-center" x-text="editingItem ? 'Edit Vendor' : 'Tambah Vendor'"></h2>
+          <button @click="closeModal()" class="p-2 text-gray-400 hover:text-gold-500 hover:bg-gold-50 rounded-full transition focus:outline-none">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <!-- Modal Body (Scrollable) -->
+        <div class="p-6 space-y-5 overflow-y-auto custom-scrollbar flex-1 text-left">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Vendor</label>
+            <input type="text" x-model="formData.name" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent transition" placeholder="Masukkan nama..." />
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+             <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+                <select x-model="formData.category" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent transition">
+                  <template x-for="cat in categories" :key="cat.id">
+                     <option :value="cat.id" x-text="cat.name"></option>
+                  </template>
+                </select>
+             </div>
+             <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Harga / Price Range</label>
+                <input type="text" x-model="formData.price_range" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent transition" placeholder="e.g. 5.500.000 (Mulai dari)" />
+             </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi & Harga Paket Lengkap</label>
+            <textarea x-model="formData.description" rows="4" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent transition" placeholder="Masukkan deskripsi layanannya..."></textarea>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+             <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Rating</label>
+                <input type="number" step="0.1" min="0" max="5" x-model="formData.rating" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent transition" />
+             </div>
+             <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Gambar / Foto</label>
+                <input type="file" @change="handleFileUpload($event)" accept="image/*" class="w-full px-3 py-1.5 text-sm text-gray-700 border border-gray-200 rounded-lg cursor-pointer bg-gray-50 focus:outline-none" />
+             </div>
+          </div>
+          
+          <div class="flex flex-col justify-center pt-2">
+             <label class="flex items-center space-x-2 cursor-pointer">
+               <input type="checkbox" x-model="formData.is_active" class="form-checkbox h-5 w-5 text-gold-500 rounded border-gray-300 focus:ring-gold-400 transition">
+               <span class="text-sm font-medium text-gray-700">Vendor Aktif</span>
+             </label>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="p-6 border-t border-gray-100 bg-gray-50 flex space-x-3">
+            <button @click="closeModal()" class="flex-1 py-2.5 bg-white text-gray-600 border border-gray-200 rounded-xl hover:bg-gray-50 transition font-medium">Batal</button>
+            <button @click="saveItem()" class="flex-1 py-2.5 admin-sidebar text-white rounded-xl hover:bg-[#0a4033] shadow-lg shadow-charcoal/20 transition font-medium">Simpan Perubahan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Injection -->
+    <script id="vendors-data" type="application/json">
+      {{ vendors_json|safe }}
+    </script>
+
+    <script>
+      function adminCatalog() {
+        console.log("adminCatalog component initialized");
+        return {
+          sidebarOpen: false,
+          currentPage: 'catalog',
+          activeCategory: 'mua',
+          categories: [
+              { id: 'mua', name: 'MUA', iconPath: '/static/assets/icon/cosmetics.png' },
+              { id: 'decoration', name: 'Dekorasi', iconPath: '/static/assets/icon/decoration.png' },
+              { id: 'tent', name: 'Tenda', iconPath: '/static/assets/icon/marquee.png' },
+              { id: 'catering', name: 'Katering', iconPath: '/static/assets/icon/buffet.png' },
+              { id: 'photographer', name: 'Fotografer', iconPath: '/static/assets/icon/photographer.png' },
+              { id: 'music', name: 'Musik', iconPath: '/static/assets/icon/music.png' },
+              { id: 'invitation', name: 'Undangan', iconPath: '/static/assets/icon/invitation.png' },
+              { id: 'gift', name: 'Hantaran', iconPath: '/static/assets/icon/gift.png' }
+          ],
+          items: [],
+          isModalOpen: false,
+          editingItem: null,
+          formData: {
+            name: '',
+            category: 'mua',
+            description: '',
+            price_range: '',
+            rating: 5.0,
+            is_active: true
+          },
+          imageFile: null,
+
+          init() {
+            console.log("adminCatalog init() called");
+            try {
+              const dataEl = document.getElementById("vendors-data");
+              if (dataEl) {
+                this.items = JSON.parse(dataEl.textContent);
+                this.items.forEach(item => {
+                   if (item.active === undefined && item.status) {
+                     item.active = item.status === 'active';
+                   }
+                });
+              } else {
+                this.items = [];
+              }
+            } catch (e) {
+              console.error("Failed to parse vendor data:", e);
+              this.items = [];
+            }
+          },
+
+          get filteredItems() {
+            return this.items.filter(i => i.category === this.activeCategory);
+          },
+
+          openAddModal() {
+            this.editingItem = null;
+            this.imageFile = null;
+            this.formData = {
+              name: '',
+              category: this.activeCategory,
+              description: '',
+              price_range: '',
+              rating: 5.0,
+              is_active: true
+            };
+            this.isModalOpen = true;
+          },
+
+          openEditModal(item) {
+            this.editingItem = item;
+            this.imageFile = null;
+            this.formData = {
+              name: item.name,
+              category: item.category,
+              description: item.description,
+              price_range: item.price_range,
+              rating: item.rating,
+              is_active: item.active
+            };
+            this.isModalOpen = true;
+          },
+
+          closeModal() {
+            this.isModalOpen = false;
+          },
+
+          handleFileUpload(event) {
+             const file = event.target.files[0];
+             if (file) {
+                this.imageFile = file;
+             }
+          },
+
+          async saveItem() {
+            try {
+               let cookie = document.cookie.match(/(^|;) ?csrftoken=([^;]*)(;|$)/);
+               let csrfToken = cookie ? cookie[2] : "";
+               
+               let url = '/admin-panel/catalog/add/';
+               if (this.editingItem) {
+                 url = `/admin-panel/catalog/${this.editingItem.id}/edit/`;
+               }
+
+               let payload = new FormData();
+               payload.append("name", this.formData.name);
+               payload.append("category", this.formData.category);
+               payload.append("description", this.formData.description || "");
+               payload.append("price_range", this.formData.price_range || "");
+               payload.append("rating", this.formData.rating);
+               payload.append("is_active", this.formData.is_active);
+               
+               if (this.imageFile) {
+                  payload.append("image", this.imageFile);
+               }
+
+               const res = await fetch(url, {
+                  method: "POST",
+                  headers: { "X-CSRFToken": csrfToken },
+                  body: payload
+               });
+               
+               const data = await res.json();
+               if (data.success) {
+                  const newVendor = data.vendor;
+                  newVendor.active = newVendor.status === 'active';
+
+                  if (this.editingItem) {
+                     const idx = this.items.findIndex(i => i.id === this.editingItem.id);
+                     if (idx !== -1) {
+                        this.items[idx] = newVendor;
+                     }
+                  } else {
+                     this.items.unshift(newVendor);
+                  }
+                  
+                  this.closeModal();
+                  Swal.fire({
+                     icon: 'success',
+                     title: 'Berhasil!',
+                     text: 'Data vendor berhasil disimpan.',
+                     timer: 1500,
+                     showConfirmButton: false
+                  });
+               } else {
+                  Swal.fire({
+                     icon: 'error',
+                     title: 'Gagal',
+                     text: data.error || "Gagal menyimpan data vendor."
+                  });
+               }
+            } catch (e) {
+               Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: 'Terjadi kesalahan saat menghubungi server.'
+               });
+            }
+          },
+
+          async deleteItem(item) {
+            const result = await Swal.fire({
+              title: 'Hapus Vendor?',
+              text: "Data vendor ini akan dihapus permanen!",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#ef4444',
+              cancelButtonColor: '#9ca3af',
+              confirmButtonText: 'Ya, Hapus!',
+              cancelButtonText: 'Batal'
+            });
+
+            if (result.isConfirmed) {
+              try {
+                let cookie = document.cookie.match(/(^|;) ?csrftoken=([^;]*)(;|$)/);
+                let csrfToken = cookie ? cookie[2] : "";
+                
+                const res = await fetch(`/admin-panel/catalog/${item.id}/delete/`, {
+                  method: "POST",
+                  headers: { "X-CSRFToken": csrfToken },
+                });
+                
+                const data = await res.json();
+                if (data.success) {
+                   this.items = this.items.filter(i => i.id !== item.id);
+                   Swal.fire({
+                     icon: 'success',
+                     title: 'Terhapus!',
+                     text: 'Vendor telah berhasil dihapus.',
+                     timer: 1500,
+                     showConfirmButton: false
+                   });
+                } else {
+                   Swal.fire({
+                     icon: 'error',
+                     title: 'Gagal',
+                     text: data.error || "Gagal menghapus vendor."
+                   });
+                }
+              } catch (e) {
+                Swal.fire({
+                   icon: 'error',
+                   title: 'Error',
+                   text: 'Terjadi kesalahan saat menghapus vendor.'
+                });
+              }
+            }
+          },
+          
+          async toggleStatus(item) {
+             setTimeout(async () => {
+                try {
+                  let cookie = document.cookie.match(/(^|;) ?csrftoken=([^;]*)(;|$)/);
+                  let csrfToken = cookie ? cookie[2] : "";
+                  
+                  const res = await fetch(`/admin-panel/catalog/${item.id}/edit/`, {
+                     method: "POST",
+                     headers: { "X-CSRFToken": csrfToken, "Content-Type": "application/json" },
+                     body: JSON.stringify({ is_active: item.active })
+                  });
+                  
+                  const data = await res.json();
+                  if (!data.success) {
+                     item.active = !item.active;
+                     Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: "Gagal mengupdate status vendor."
+                     });
+                  }
+                } catch (e) {
+                  item.active = !item.active;
+                }
+             }, 50);
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="id" x-data="{ sidebarOpen: false, currentPage: 'dashboard' }">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Admin Omah Rias Ika</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              gold: {
+                50: "#FDF8E6",
+                100: "#FBF1CD",
+                200: "#F6E39B",
+                300: "#F1D569",
+                400: "#D4AF37" /* Base Champagne Gold */,
+                500: "#B38F24",
+                600: "#92741D",
+              },
+              charcoal: "#062D24" /* Deep Emerald */,
+              "warm-white": "#FDFCF8" /* Ivory Silk */,
+              "white-smoke": "#F5F5F5",
+              slate: "#2C3E50" /* Midnight Slate */,
+            },
+            fontFamily: {
+              display: ["Playfair Display", "serif"],
+              body: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+
+  <body class="font-body bg-cream text-espresso">
+    <div class="min-h-screen">
+      <!-- Mobile Sidebar Overlay -->
+      <div
+        x-show="sidebarOpen"
+        x-transition:enter="transition-opacity ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition-opacity ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 bg-black/50 z-40 lg:hidden"
+        @click="sidebarOpen = false"
+      ></div>
+
+      <!-- Sidebar -->
+      <aside
+        :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
+        class="fixed top-0 left-0 h-full w-64 admin-sidebar text-white z-50 transition-transform duration-300 lg:translate-x-0"
+      >
+        <!-- Logo -->
+        <div
+          class="p-4 border-b admin-sidebar/30 border-charcoal/20 flex items-center justify-between"
+        >
+          <div class="flex items-center space-x-2">
+            <span class="text-2xl">💒</span>
+            <span class="font-display text-xl font-bold text-rosegold-light"
+              >Omah Rias Ika</span
+            >
+          </div>
+          <button
+            @click="sidebarOpen = false"
+            class="lg:hidden p-1 hover:bg-gray-700 rounded"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="p-4 space-y-2">
+          <a
+            href="/admin-panel/dashboard/"
+            :class="currentPage === 'dashboard' ? 'bg-wine/20 text-rosegold-light' : 'text-slate-300 hover:bg-wine/10 hover:text-gold-100 transition'"
+            class="flex items-center space-x-3 px-4 py-3 rounded-xl"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              />
+            </svg>
+            <span>Dashboard</span>
+          </a>
+          <a
+            href="/admin-panel/orders/"
+            :class="currentPage === 'orders' ? 'bg-wine/20 text-rosegold-light' : 'text-slate-300 hover:bg-wine/10 hover:text-gold-100 transition'"
+            class="flex items-center space-x-3 px-4 py-3 rounded-xl"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+              />
+            </svg>
+            <span>Orders</span>
+          </a>
+          <a
+            href="/admin-panel/catalog/"
+            :class="currentPage === 'catalog' ? 'bg-wine/20 text-rosegold-light' : 'text-slate-300 hover:bg-wine/10 hover:text-gold-100 transition'"
+            class="flex items-center space-x-3 px-4 py-3 rounded-xl"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+              />
+            </svg>
+            <span>Katalog</span>
+          </a>
+          <a
+            href="/admin-panel/packages/"
+            :class="currentPage === 'packages' ? 'bg-wine/20 text-rosegold-light' : 'text-slate-300 hover:bg-wine/10 hover:text-gold-100 transition'"
+            class="flex items-center space-x-3 px-4 py-3 rounded-xl"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+              />
+            </svg>
+            <span>Paket</span>
+          </a>
+          <a
+            href="/admin-panel/gallery/"
+            :class="currentPage === 'gallery' ? 'bg-wine/20 text-rosegold-light' : 'text-slate-300 hover:bg-wine/10 hover:text-gold-100 transition'"
+            class="flex items-center space-x-3 px-4 py-3 rounded-xl"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+            <span>Gallery</span>
+          </a>
+          <div class="pt-4 mt-4 border-t border-charcoal/20">
+            <form method="post" action="/admin-panel/logout/">
+              {% csrf_token %}
+              <button
+                type="submit"
+                class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-400 hover:bg-red-500/20 hover:text-red-400 transition"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
+                </svg>
+                <span>Logout</span>
+              </button>
+            </form>
+          </div>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="lg:ml-64 min-h-screen">
+        <!-- Top Bar -->
+        <header
+          class="bg-cream shadow-sm sticky top-0 z-20 border-b border-gray-200/50"
+        >
+          <div class="flex items-center justify-between px-4 sm:px-6 py-4">
+            <div class="flex items-center space-x-3">
+              <button
+                @click="sidebarOpen = true"
+                class="lg:hidden p-2 hover:bg-wine/10 rounded-lg transition"
+              >
+                <svg
+                  class="w-6 h-6 text-gray-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
+              </button>
+              <h1 class="text-lg sm:text-xl font-semibold text-espresso">
+                Dashboard
+              </h1>
+            </div>
+            <div class="flex items-center space-x-2 sm:space-x-4">
+              <button
+                class="relative p-2 hover:bg-wine/10 rounded-lg transition"
+              >
+                <svg
+                  class="w-5 h-5 text-gray-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                  />
+                </svg>
+                <span
+                  class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"
+                ></span>
+              </button>
+              <div class="flex items-center space-x-2">
+                <div
+                  class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-wine flex items-center justify-center text-white font-semibold text-sm"
+                >
+                  A
+                </div>
+                <span class="hidden sm:block text-sm font-medium text-espresso"
+                  >Admin</span
+                >
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="p-4 sm:p-6">
+          <!-- Stats Cards -->
+          <!-- Row 1: Key Stats (3 cols) -->
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 mb-6"
+          >
+            <div
+              class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-md border border-gold-400/20"
+            >
+              <div class="flex items-center justify-between mb-2">
+                <div
+                  class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center"
+                >
+                  <svg
+                    class="w-6 h-6 text-blue-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                    />
+                  </svg>
+                </div>
+                <span class="text-green-500 text-sm font-medium">+12%</span>
+              </div>
+              <h3 class="text-2xl font-bold text-espresso">
+                {{ total_bookings }}
+              </h3>
+              <p class="text-slate-500 text-sm">Active Orders</p>
+            </div>
+
+            <div
+              class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-md border border-gold-400/20"
+            >
+              <div class="flex items-center justify-between mb-2">
+                <div
+                  class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center"
+                >
+                  <svg
+                    class="w-6 h-6 text-green-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <span class="text-green-500 text-sm font-medium">+8%</span>
+              </div>
+              <h3 class="text-2xl font-bold text-espresso">
+                Rp {{ total_revenue|floatformat:0 }}
+              </h3>
+              <p class="text-slate-500 text-sm">Revenue</p>
+            </div>
+
+            <div
+              class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-md border border-gold-400/20"
+            >
+              <div class="flex items-center justify-between mb-2">
+                <div
+                  class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center"
+                >
+                  <svg
+                    class="w-6 h-6 text-purple-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+                <span class="text-yellow-500 text-sm font-medium">3/wk</span>
+              </div>
+              <h3 class="text-2xl font-bold text-espresso">8</h3>
+              <p class="text-slate-500 text-sm">Events</p>
+            </div>
+          </div>
+
+          <!-- Row 2: Analytics & New Bookings -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
+            <!-- Revenue Chart -->
+            <div
+              class="lg:col-span-2 bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-gold-400/20"
+            >
+              <div class="flex items-center justify-between mb-4 sm:mb-6">
+                <h2 class="text-lg font-semibold text-espresso">
+                  Monthly Revenue
+                </h2>
+                <select
+                  class="text-sm border border-gray-200 rounded-lg px-3 py-2"
+                >
+                  <option>2025</option>
+                  <option>2024</option>
+                </select>
+              </div>
+              <div class="h-64">
+                <canvas id="revenueChart"></canvas>
+              </div>
+            </div>
+
+            <!-- New Bookings -->
+            <div
+              class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-md border border-gold-400/20"
+            >
+              <div class="flex items-center justify-between mb-4 sm:mb-6">
+                <h2 class="text-lg font-semibold text-espresso">
+                  New Bookings
+                </h2>
+                <a
+                  href="/admin-panel/orders/"
+                  class="text-rosegold-light text-sm font-medium"
+                  >View All</a
+                >
+              </div>
+              <div class="space-y-3">
+                {% for booking in recent_bookings %}
+                <div
+                  class="flex items-center space-x-3 p-3 bg-wine/5 rounded-xl border border-gold-400/10 shadow-sm transition-all hover:shadow-md"
+                >
+                  <div
+                    class="w-10 h-10 rounded-full bg-gold-100 flex items-center justify-center flex-shrink-0"
+                  >
+                    <span class="text-gold-600 font-semibold text-sm"
+                      >{{ booking.name|first|upper }}</span
+                    >
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="font-medium text-espresso text-sm truncate">
+                      {{ booking.name }}
+                    </p>
+                    <p class="text-xs text-slate-500">
+                      {{ booking.package.name|default:"Custom" }} • {{ booking.event_date|date:"M d" }}
+                    </p>
+                  </div>
+                  <span
+                    class="px-2 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-700 rounded-full"
+                  >
+                    {{ booking.get_status_display }}
+                  </span>
+                </div>
+                {% empty %}
+                <p class="text-gray-400 text-sm italic">
+                  Belum ada pemesanan baru.
+                </p>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 3: Interactive Calendar (Compact & Multi-Booking) -->
+          <div
+            class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-lg border border-gold-400/20 mb-6"
+            x-data="{
+                    currentDate: new Date(2026, 2, 1),
+                    selectedDate: null,
+                    bookings: {
+                        15: [{ title: 'Andi & Putri', location: 'Hotel Grand Ballroom', type: 'Extra', color: 'bg-wine' }],
+                        20: [
+                            { title: 'Rudi & Sari', location: 'Villa Bunga Indah', type: 'Medium', color: 'bg-blue-500' },
+                            { title: 'Corporate Gathering', location: 'Lounge Area', type: 'Meeting', color: 'bg-gray-500' }
+                        ],
+                        28: [{ title: 'Tech Meeting', location: 'Office', type: 'Meeting', color: 'bg-purple-500' }]
+                    },
+                    get days() {
+                        let days = [];
+                        let firstDay = this.currentDate.getDay();
+                        let lastDate = new Date(2026, 3, 0).getDate();
+                        for (let i = 0; i < firstDay; i++) days.push('');
+                        for (let i = 1; i <= lastDate; i++) days.push(i);
+                        return days;
+                    }
+                }"
+          >
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-2">
+                <div
+                  class="w-8 h-8 rounded-full bg-gold-100 flex items-center justify-center"
+                >
+                  <span class="text-lg">📅</span>
+                </div>
+                <h2 class="text-lg font-bold text-espresso">
+                  Booking Calendar
+                </h2>
+              </div>
+              <span class="text-base font-medium text-espresso"
+                >Maret 2026</span
+              >
+            </div>
+
+            <!-- Calendar Grid -->
+            <div class="w-full">
+              <div class="grid grid-cols-7 mb-2">
+                <template
+                  x-for="d in ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab']"
+                >
+                  <div
+                    class="text-center text-xs font-semibold text-gray-400 py-1"
+                    x-text="d"
+                  ></div>
+                </template>
+              </div>
+              <div class="grid grid-cols-7 gap-1 sm:gap-2">
+                <template x-for="(day, index) in days">
+                  <div
+                    class="min-h-[50px] sm:min-h-[70px] border border-gray-100 rounded-lg p-1 relative transition hover:bg-gray-50 flex flex-col items-start justify-start group"
+                    :class="day !== '' ? 'bg-white' : 'bg-gray-50/50 border-none'"
+                  >
+                    <template x-if="day !== ''">
+                      <div
+                        class="w-full h-full cursor-pointer"
+                        @click="selectedDate = (selectedDate === day ? null : day)"
+                      >
+                        <span
+                          class="text-xs font-semibold text-gray-500"
+                          x-text="day"
+                        ></span>
+
+                        <!-- Event Indicators (Dots) -->
+                        <template x-if="bookings[day]">
+                          <div class="flex flex-wrap gap-1 mt-1">
+                            <template x-for="event in bookings[day]">
+                              <div
+                                class="w-2 h-2 rounded-full"
+                                :class="event.color"
+                              ></div>
+                            </template>
+                          </div>
+                        </template>
+
+                        <!-- Tooltip (Loop for Multi-Booking) -->
+                        <div
+                          x-show="selectedDate === day && bookings[day]"
+                          @click.stop
+                          x-transition:enter="transition ease-out duration-200"
+                          x-transition:enter-start="opacity-0 translate-y-2"
+                          x-transition:enter-end="opacity-100 translate-y-0"
+                          class="absolute z-20 bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-64 bg-white border border-gray-200 shadow-xl rounded-xl p-3 text-left"
+                        >
+                          <div
+                            class="flex items-center justify-between mb-2 pb-2 border-b border-gray-100"
+                          >
+                            <span
+                              class="font-bold text-espresso text-sm"
+                              x-text="day + ' Maret 2026'"
+                            ></span>
+                            <button
+                              @click.stop="selectedDate = null"
+                              class="text-gray-400 hover:text-gray-600"
+                            >
+                              <svg
+                                class="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M6 18L18 6M6 6l12 12"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+
+                          <div class="space-y-3 max-h-60 overflow-y-auto">
+                            <template x-for="event in bookings[day]">
+                              <div
+                                class="relative pl-3 border-l-2"
+                                :class="event.color.replace('bg-', 'border-')"
+                              >
+                                <p
+                                  class="font-bold text-espresso text-sm"
+                                  x-text="event.title"
+                                ></p>
+                                <div
+                                  class="text-xs text-gray-500 mt-1 flex flex-col gap-0.5"
+                                >
+                                  <span class="flex items-center gap-1"
+                                    >📍 <span x-text="event.location"></span
+                                  ></span>
+                                  <span class="flex items-center gap-1"
+                                    >🔖 <span x-text="event.type"></span
+                                  ></span>
+                                </div>
+                              </div>
+                            </template>
+                          </div>
+
+                          <div
+                            class="absolute bottom-[-6px] left-1/2 transform -translate-x-1/2 w-3 h-3 bg-white border-b border-r border-gray-200 rotate-45"
+                          ></div>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 4: Upcoming Events -->
+          <div
+            class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-gold-400/20"
+          >
+            <div class="flex items-center justify-between mb-4 sm:mb-6">
+              <h2 class="text-base sm:text-lg font-semibold text-espresso">
+                Upcoming Events List
+              </h2>
+              <div class="flex items-center space-x-1 sm:space-x-2">
+                <button
+                  class="p-1.5 sm:p-2 hover:bg-wine/10 rounded-lg transition-colors"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 19l-7-7 7-7"
+                    />
+                  </svg>
+                </button>
+                <span class="text-sm font-medium">Maret 2026</span>
+                <button
+                  class="p-1.5 sm:p-2 hover:bg-wine/10 rounded-lg transition-colors"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"
+            >
+              <div
+                class="p-3 sm:p-4 rounded-xl border-2 border-gold-400/30 bg-wine/5 shadow-sm hover:shadow-md transition-all"
+              >
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xl sm:text-2xl font-bold text-gold-500"
+                    >15</span
+                  >
+                  <span class="text-xs sm:text-sm text-gray-500">Maret</span>
+                </div>
+                <p class="font-medium text-espresso text-sm sm:text-base">
+                  Andi & Putri
+                </p>
+                <p class="text-xs sm:text-sm text-gray-500 truncate">
+                  Hotel Grand Ballroom
+                </p>
+                <span
+                  class="mt-2 inline-block px-2 py-0.5 text-xs bg-wine text-white rounded-full"
+                  >Extra</span
+                >
+              </div>
+              <div class="p-3 sm:p-4 rounded-xl border border-gray-200">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xl sm:text-2xl font-bold text-espresso"
+                    >20</span
+                  >
+                  <span class="text-xs sm:text-sm text-gray-500">Maret</span>
+                </div>
+                <p class="font-medium text-espresso text-sm sm:text-base">
+                  Rudi & Sari
+                </p>
+                <p class="text-xs sm:text-sm text-gray-500 truncate">
+                  Villa Bunga Indah
+                </p>
+                <span
+                  class="mt-2 inline-block px-2 py-0.5 text-xs bg-blue-500 text-white rounded-full"
+                  >Medium</span
+                >
+              </div>
+              <div class="p-3 sm:p-4 rounded-xl border border-gray-200">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xl sm:text-2xl font-bold text-espresso"
+                    >28</span
+                  >
+                  <span class="text-xs sm:text-sm text-gray-500">Maret</span>
+                </div>
+                <p class="font-medium text-espresso text-sm sm:text-base">
+                  Tech Meeting
+                </p>
+                <p class="text-xs sm:text-sm text-gray-500 truncate">
+                  Dedi & Maya
+                </p>
+                <span
+                  class="mt-2 inline-block px-2 py-0.5 text-xs bg-purple-500 text-white rounded-full"
+                  >Meeting</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const ctx = document.getElementById("revenueChart").getContext("2d");
+        new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: [
+              "Jan",
+              "Feb",
+              "Mar",
+              "Apr",
+              "May",
+              "Jun",
+              "Jul",
+              "Aug",
+              "Sep",
+              "Oct",
+              "Nov",
+              "Dec",
+            ],
+            datasets: [
+              {
+                label: "Revenue (Juta)",
+                data: [
+                  450, 520, 650, 700, 780, 850, 920, 880, 950, 1020, 980, 1100,
+                ],
+                borderColor: "#D4AF37",
+                backgroundColor: "rgba(212, 175, 55, 0.1)",
+                fill: true,
+                tension: 0.4,
+                pointRadius: window.innerWidth < 640 ? 2 : 4,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { beginAtZero: true, grid: { color: "rgba(0,0,0,0.05)" } },
+              x: { grid: { display: false } },
+            },
+          },
+        });
+      });
+    </script>
+  </body>
+</html>

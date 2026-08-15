@@ -1,0 +1,901 @@
+<!doctype html>
+<html lang="id" x-data="{ sidebarOpen: false, currentPage: 'orders' }">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orders - Admin Omah Rias Ika</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              gold: {
+                50: "#FDF8E6",
+                100: "#FBF1CD",
+                200: "#F6E39B",
+                300: "#F1D569",
+                400: "#D4AF37" /* Base Champagne Gold */,
+                500: "#B38F24",
+                600: "#92741D",
+              },
+              charcoal: "#062D24" /* Deep Emerald */,
+              "warm-white": "#FDFCF8" /* Ivory Silk */,
+              "white-smoke": "#F5F5F5",
+              slate: "#2C3E50" /* Midnight Slate */,
+            },
+            fontFamily: {
+              display: ["Playfair Display", "serif"],
+              body: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+
+  <body class="font-body bg-cream text-espresso">
+    <div class="min-h-screen">
+      <!-- Mobile Sidebar Overlay -->
+      <div
+        x-show="sidebarOpen"
+        x-transition:enter="transition-opacity ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition-opacity ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 bg-black/50 z-40 lg:hidden"
+        @click="sidebarOpen = false"
+      ></div>
+
+      <!-- Sidebar -->
+      <aside
+        :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
+        class="fixed top-0 left-0 h-full w-64 admin-sidebar text-white z-50 transition-transform duration-300 lg:translate-x-0"
+      >
+        <!-- Logo -->
+        <div
+          class="p-4 border-b border-charcoal/20 flex items-center justify-between"
+        >
+          <div class="flex items-center space-x-2">
+            <span class="text-2xl">💒</span>
+            <span class="font-display text-xl font-bold text-rosegold-light"
+              >Omah Rias Ika</span
+            >
+          </div>
+          <button
+            @click="sidebarOpen = false"
+            class="lg:hidden p-1 hover:bg-gray-700 rounded"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="p-4 space-y-2">
+          <a
+            href="/admin-panel/dashboard/"
+            :class="currentPage === 'dashboard' ? 'bg-wine/20 text-rosegold-light' : 'text-slate-300 hover:bg-wine/10 hover:text-gold-100 transition'"
+            class="flex items-center space-x-3 px-4 py-3 rounded-xl"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              />
+            </svg>
+            <span>Dashboard</span>
+          </a>
+          <a
+            href="/admin-panel/orders/"
+            :class="currentPage === 'orders' ? 'bg-wine/20 text-rosegold-light' : 'text-slate-300 hover:bg-wine/10 hover:text-gold-100 transition'"
+            class="flex items-center space-x-3 px-4 py-3 rounded-xl"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+              />
+            </svg>
+            <span>Orders</span>
+          </a>
+          <a
+            href="/admin-panel/catalog/"
+            :class="currentPage === 'catalog' ? 'bg-wine/20 text-rosegold-light' : 'text-slate-300 hover:bg-wine/10 hover:text-gold-100 transition'"
+            class="flex items-center space-x-3 px-4 py-3 rounded-xl"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+              />
+            </svg>
+            <span>Katalog</span>
+          </a>
+          <a
+            href="/admin-panel/packages/"
+            :class="currentPage === 'packages' ? 'bg-wine/20 text-rosegold-light' : 'text-slate-300 hover:bg-wine/10 hover:text-gold-100 transition'"
+            class="flex items-center space-x-3 px-4 py-3 rounded-xl"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+              />
+            </svg>
+            <span>Paket</span>
+          </a>
+          <a
+            href="/admin-panel/gallery/"
+            :class="currentPage === 'gallery' ? 'bg-wine/20 text-rosegold-light' : 'text-slate-300 hover:bg-wine/10 hover:text-gold-100 transition'"
+            class="flex items-center space-x-3 px-4 py-3 rounded-xl"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+            <span>Gallery</span>
+          </a>
+          <div class="pt-4 mt-4 border-t border-charcoal/20">
+            <form method="post" action="/admin-panel/logout/">
+              {% csrf_token %}
+              <button
+                type="submit"
+                class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-400 hover:bg-red-500/20 hover:text-red-400 transition"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
+                </svg>
+                <span>Logout</span>
+              </button>
+            </form>
+          </div>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="lg:ml-64 min-h-screen">
+        <!-- Top Bar -->
+        <header
+          class="bg-cream shadow-sm sticky top-0 z-20 border-b border-gray-200/50"
+        >
+          <div class="flex items-center justify-between px-4 sm:px-6 py-4">
+            <div class="flex items-center space-x-3">
+              <button
+                @click="sidebarOpen = true"
+                class="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition"
+              >
+                <svg
+                  class="w-6 h-6 text-gray-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
+              </button>
+              <h1 class="text-lg sm:text-xl font-semibold text-espresso">
+                Orders
+              </h1>
+            </div>
+            <div class="flex items-center space-x-2 sm:space-x-4">
+              <button
+                class="relative p-2 hover:bg-gray-100 rounded-lg transition"
+              >
+                <svg
+                  class="w-5 h-5 text-gray-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                  />
+                </svg>
+                <span
+                  class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"
+                ></span>
+              </button>
+              <div class="flex items-center space-x-2">
+                <div
+                  class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-wine flex items-center justify-center text-white font-semibold text-sm"
+                >
+                  A
+                </div>
+                <span class="hidden sm:block text-sm font-medium text-espresso"
+                  >Admin</span
+                >
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Orders Content -->
+        <script id="orders-data" type="application/json">
+          {{ orders_json|safe }}
+        </script>
+        <script>
+          document.addEventListener("alpine:init", () => {
+            Alpine.data("adminOrders", () => ({
+              filterStatus: "all",
+              orders: JSON.parse(
+                document.getElementById("orders-data").textContent,
+              ),
+              showModal: false,
+              selectedOrder: null,
+              paymentAmount: "",
+              openModal(order) {
+                this.selectedOrder = order;
+                this.showModal = true;
+              },
+              closeModal() {
+                this.showModal = false;
+                this.selectedOrder = null;
+                this.paymentAmount = "";
+              },
+              async saveEditedOrder() {
+                if (!this.selectedOrder) return;
+                try {
+                  let cookie = document.cookie.match(
+                    /(^|;) ?csrftoken=([^;]*)(;|$)/,
+                  );
+                  let csrfToken = cookie ? cookie[2] : "";
+                  const res = await fetch(
+                    `/admin-panel/orders/${this.selectedOrder.id}/edit/`,
+                    {
+                      method: "POST",
+                      headers: {
+                        "X-CSRFToken": csrfToken,
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({
+                        name: this.selectedOrder.name,
+                        whatsapp: this.selectedOrder.whatsapp,
+                        date: this.selectedOrder.date,
+                        venue: this.selectedOrder.venue,
+                        guest_count: this.selectedOrder.guest_count,
+                        notes: this.selectedOrder.notes,
+                        status: this.selectedOrder.status,
+                        add_payment: this.paymentAmount,
+                      }),
+                    },
+                  );
+                  const data = await res.json();
+                  if (data.success) {
+                    const index = this.orders.findIndex(
+                      (o) => o.id === this.selectedOrder.id,
+                    );
+                    if (index !== -1) {
+                      this.orders[index] = data.booking;
+                      this.selectedOrder = data.booking;
+                    }
+                    this.paymentAmount = "";
+                    Swal.fire({
+                      icon: "success",
+                      title: "Berhasil!",
+                      text: "Pesanan berhasil diperbarui.",
+                      timer: 1500,
+                      showConfirmButton: false,
+                    });
+                  } else {
+                    Swal.fire({
+                      icon: "error",
+                      title: "Gagal",
+                      text: data.error || "Gagal memperbarui pesanan.",
+                    });
+                  }
+                } catch (e) {
+                  Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "Terjadi kesalahan saat menyimpan perubahan.",
+                  });
+                }
+              },
+              async deleteOrder() {
+                if (!this.selectedOrder) return;
+
+                const result = await Swal.fire({
+                  title: "Hapus Pesanan?",
+                  text: "Data pesanan ini akan dihapus permanen dan tidak dapat dikembalikan!",
+                  icon: "warning",
+                  showCancelButton: true,
+                  confirmButtonColor: "#ef4444",
+                  cancelButtonColor: "#9ca3af",
+                  confirmButtonText: "Ya, Hapus!",
+                  cancelButtonText: "Batal",
+                });
+
+                if (result.isConfirmed) {
+                  try {
+                    let cookie = document.cookie.match(
+                      /(^|;) ?csrftoken=([^;]*)(;|$)/,
+                    );
+                    let csrfToken = cookie ? cookie[2] : "";
+                    const res = await fetch(
+                      `/admin-panel/orders/${this.selectedOrder.id}/delete/`,
+                      {
+                        method: "POST",
+                        headers: { "X-CSRFToken": csrfToken },
+                      },
+                    );
+                    const data = await res.json();
+
+                    if (data.success) {
+                      this.orders = this.orders.filter(
+                        (o) => o.id !== this.selectedOrder.id,
+                      );
+                      this.closeModal();
+                      Swal.fire({
+                        icon: "success",
+                        title: "Terhapus!",
+                        text: "Pesanan telah berhasil dihapus.",
+                        timer: 1500,
+                        showConfirmButton: false,
+                      });
+                    } else {
+                      Swal.fire({
+                        icon: "error",
+                        title: "Gagal",
+                        text: data.error || "Gagal menghapus pesanan.",
+                      });
+                    }
+                  } catch (e) {
+                    Swal.fire({
+                      icon: "error",
+                      title: "Error",
+                      text: "Terjadi kesalahan saat menghapus pesanan. Silakan coba lagi.",
+                    });
+                  }
+                }
+              },
+              formatCurrency(amount) {
+                return new Intl.NumberFormat("id-ID", {
+                  style: "currency",
+                  currency: "IDR",
+                  minimumFractionDigits: 0,
+                }).format(amount);
+              },
+              getStatusLabel(status) {
+                const labels = {
+                  booking: "Booking",
+                  dp: "DP Paid",
+                  technical_meeting: "Tech Meeting",
+                  ready: "Ready",
+                };
+                return labels[status] || status;
+              },
+              getStatusColor(status) {
+                const colors = {
+                  booking: "bg-yellow-100 text-yellow-700",
+                  dp: "bg-blue-100 text-blue-700",
+                  technical_meeting: "bg-purple-100 text-purple-700",
+                  ready: "bg-green-100 text-green-700",
+                };
+                return colors[status] || "bg-gray-100 text-gray-700";
+              },
+              get filteredOrders() {
+                if (this.filterStatus === "all") return this.orders;
+                return this.orders.filter(
+                  (o) => o.status === this.filterStatus,
+                );
+              },
+            }));
+          });
+        </script>
+        <div class="p-6" x-data="adminOrders()">
+          <!-- Filters -->
+          <div
+            class="bg-white rounded-xl sm:rounded-2xl p-4 shadow-md border border-gold-400/20 mb-6"
+          >
+            <div class="flex flex-wrap items-center gap-4">
+              <div class="flex items-center space-x-2">
+                <span class="text-sm text-slate-500">Filter:</span>
+                <select
+                  x-model="filterStatus"
+                  class="text-sm border border-gray-200 rounded-lg px-3 py-2"
+                >
+                  <option value="all">All Status</option>
+                  <option value="booking">Booking</option>
+                  <option value="dp">DP Paid</option>
+                  <option value="technical_meeting">Tech Meeting</option>
+                  <option value="ready">Ready</option>
+                </select>
+              </div>
+              <div class="flex-1"></div>
+              <div class="relative">
+                <input
+                  type="text"
+                  placeholder="Search orders..."
+                  class="w-64 text-sm border border-gray-200 rounded-lg pl-10 pr-4 py-2"
+                />
+                <svg
+                  class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Orders Table -->
+          <div
+            class="bg-white rounded-xl sm:rounded-2xl shadow-lg border border-gold-400/20 overflow-hidden"
+          >
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead class="bg-wine/5">
+                  <tr>
+                    <th
+                      class="text-left py-4 px-6 text-xs font-semibold text-slate-500 uppercase"
+                    >
+                      Booking Code
+                    </th>
+                    <th
+                      class="text-left py-4 px-6 text-xs font-semibold text-slate-500 uppercase"
+                    >
+                      Customer
+                    </th>
+                    <th
+                      class="text-left py-4 px-6 text-xs font-semibold text-slate-500 uppercase"
+                    >
+                      Event Date
+                    </th>
+                    <th
+                      class="text-left py-4 px-6 text-xs font-semibold text-slate-500 uppercase"
+                    >
+                      Package
+                    </th>
+                    <th
+                      class="text-left py-4 px-6 text-xs font-semibold text-slate-500 uppercase"
+                    >
+                      Status
+                    </th>
+                    <th
+                      class="text-left py-4 px-6 text-xs font-semibold text-slate-500 uppercase"
+                    >
+                      Payment
+                    </th>
+                    <th
+                      class="text-right py-4 px-6 text-xs font-semibold text-slate-500 uppercase"
+                    >
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                  <template x-for="order in filteredOrders" :key="order.id">
+                    <tr class="hover:bg-wine/5 transition">
+                      <td class="py-4 px-6">
+                        <span
+                          class="font-mono font-semibold text-gold-500"
+                          x-text="order.id"
+                        ></span>
+                      </td>
+                      <td class="py-4 px-6">
+                        <p
+                          class="font-medium text-espresso"
+                          x-text="order.name"
+                        ></p>
+                        <p
+                          class="text-xs text-slate-500"
+                          x-text="'+' + order.whatsapp"
+                        ></p>
+                      </td>
+                      <td
+                        class="py-4 px-6 text-gray-600"
+                        x-text="order.date"
+                      ></td>
+                      <td class="py-4 px-6">
+                        <span class="font-medium" x-text="order.package"></span>
+                      </td>
+                      <td class="py-4 px-6">
+                        <span
+                          :class="getStatusColor(order.status)"
+                          class="px-3 py-1 rounded-full text-xs font-medium"
+                          x-text="getStatusLabel(order.status)"
+                        ></span>
+                      </td>
+                      <td class="py-4 px-6">
+                        <div class="w-24">
+                          <div class="flex justify-between text-xs mb-1">
+                            <span
+                              class="text-gray-500"
+                              x-text="order.total > 0 ? Math.round(order.paid / order.total * 100) + '%' : '0%'"
+                            ></span>
+                          </div>
+                          <div
+                            class="h-1.5 bg-gray-200 rounded-full overflow-hidden"
+                          >
+                            <div
+                              class="h-full bg-green-500 rounded-full"
+                              :style="'width: ' + (order.total > 0 ? (order.paid / order.total * 100) : 0) + '%'"
+                            ></div>
+                          </div>
+                        </div>
+                      </td>
+                      <td
+                        class="py-4 px-6 flex justify-end items-center space-x-2"
+                      >
+                        <button
+                          @click="openModal(order)"
+                          class="p-2 hover:bg-gold-50 text-rosegold-light rounded-lg transition flex items-center justify-center"
+                          title="View Details"
+                        >
+                          <svg
+                            class="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                            />
+                          </svg>
+                        </button>
+                        <a
+                          :href="'https://wa.me/' + order.whatsapp"
+                          target="_blank"
+                          class="p-2 hover:bg-green-50 text-green-500 rounded-lg transition flex items-center justify-center"
+                          title="WhatsApp"
+                        >
+                          <svg
+                            class="w-5 h-5"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"
+                            />
+                          </svg>
+                        </a>
+                      </td>
+                    </tr>
+                  </template>
+                  <tr x-show="filteredOrders.length === 0" x-cloak>
+                    <td colspan="7" class="py-12 text-center text-gray-500">
+                      Tidak ada pesanan ditemukan.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Order Detail Modal -->
+          <div
+            x-show="showModal"
+            x-cloak
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            class="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style="background: rgba(0, 0, 0, 0.5)"
+            @click.self="closeModal()"
+          >
+            <div
+              x-show="showModal"
+              x-transition
+              class="bg-cream rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden border border-gold-400/30"
+            >
+              <div
+                class="flex-shrink-0 p-6 border-b border-gray-100 flex items-center justify-between"
+              >
+                <h2 class="text-xl font-semibold text-espresso">
+                  Order Details
+                </h2>
+                <button
+                  @click="closeModal()"
+                  class="p-2 hover:bg-gray-100 rounded-full"
+                >
+                  <svg
+                    class="w-5 h-5 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <div
+                class="p-6 overflow-y-auto flex-1 custom-scrollbar"
+                x-show="selectedOrder"
+              >
+                <!-- Order Info -->
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                  <div>
+                    <label class="block text-xs text-gray-500 mb-1"
+                      >Booking Code</label
+                    >
+                    <p
+                      class="font-mono font-bold text-gold-500 text-lg"
+                      x-text="selectedOrder?.id"
+                    ></p>
+                  </div>
+                  <div>
+                    <label class="block text-xs text-gray-500 mb-1"
+                      >Package</label
+                    >
+                    <p
+                      class="font-medium text-espresso py-1"
+                      x-text="selectedOrder?.package"
+                    ></p>
+                  </div>
+                  <div>
+                    <label class="block text-xs text-gray-500 mb-1"
+                      >Customer Name</label
+                    >
+                    <input
+                      type="text"
+                      x-model="selectedOrder.name"
+                      class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-espresso"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-xs text-gray-500 mb-1"
+                      >WhatsApp</label
+                    >
+                    <input
+                      type="text"
+                      x-model="selectedOrder.whatsapp"
+                      class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-espresso"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-xs text-gray-500 mb-1"
+                      >Event Date</label
+                    >
+                    <input
+                      type="date"
+                      x-model="selectedOrder.date"
+                      class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-espresso"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-xs text-gray-500 mb-1"
+                      >Guest Count</label
+                    >
+                    <input
+                      type="text"
+                      x-model="selectedOrder.guest_count"
+                      class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-espresso"
+                    />
+                  </div>
+                  <div class="col-span-2">
+                    <label class="block text-xs text-gray-500 mb-1"
+                      >Venue</label
+                    >
+                    <input
+                      type="text"
+                      x-model="selectedOrder.venue"
+                      class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-espresso"
+                    />
+                  </div>
+                  <div class="col-span-2">
+                    <label class="block text-xs text-gray-500 mb-1"
+                      >Notes</label
+                    >
+                    <textarea
+                      x-model="selectedOrder.notes"
+                      class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-espresso"
+                      rows="2"
+                    ></textarea>
+                  </div>
+                </div>
+
+                <!-- Status Update -->
+                <div class="mb-6">
+                  <label class="block text-sm font-medium text-gray-700 mb-2"
+                    >Update Status</label
+                  >
+                  <select
+                    x-model="selectedOrder.status"
+                    class="w-full border border-gray-200 rounded-xl px-4 py-3"
+                  >
+                    <option value="booking">Booking</option>
+                    <option value="dp">DP Paid</option>
+                    <option value="technical_meeting">Technical Meeting</option>
+                    <option value="ready">Ready</option>
+                  </select>
+                </div>
+
+                <!-- Payment Info -->
+                <div
+                  class="bg-wine/10 rounded-xl p-4 mb-6 border border-gold-400/20 shadow-inner"
+                >
+                  <h3 class="font-semibold mb-4">Payment Information</h3>
+                  <div class="space-y-3">
+                    <div class="flex justify-between">
+                      <span class="text-gray-500">Total</span>
+                      <span
+                        class="font-medium"
+                        x-text="formatCurrency(selectedOrder?.total)"
+                      ></span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-gray-500">Paid</span>
+                      <span
+                        class="font-medium text-green-600"
+                        x-text="formatCurrency(selectedOrder?.paid)"
+                      ></span>
+                    </div>
+                    <div class="flex justify-between border-t pt-3">
+                      <span class="font-medium">Remaining</span>
+                      <span
+                        class="font-bold text-gold-500"
+                        x-text="formatCurrency((selectedOrder?.total || 0) - (selectedOrder?.paid || 0))"
+                      ></span>
+                    </div>
+                  </div>
+                  <div class="mt-4">
+                    <label class="block text-sm text-gray-500 mb-2"
+                      >Record Payment</label
+                    >
+                    <div class="flex space-x-2">
+                      <input
+                        type="number"
+                        x-model="paymentAmount"
+                        placeholder="Amount"
+                        class="flex-1 border border-gray-200 rounded-lg px-3 py-2"
+                      />
+                      <button
+                        @click="saveEditedOrder()"
+                        class="px-4 py-2 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition"
+                      >
+                        Add
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex space-x-3">
+                  <button
+                    @click="saveEditedOrder()"
+                    class="flex-1 py-3 bg-wine text-white rounded-xl font-semibold hover:bg-gold-500 transition"
+                  >
+                    Save Changes
+                  </button>
+                  <a
+                    :href="'https://wa.me/' + selectedOrder?.whatsapp"
+                    target="_blank"
+                    class="px-6 py-3 bg-green-500 text-white rounded-xl font-semibold hover:bg-green-600 transition flex items-center justify-center"
+                  >
+                    <svg
+                      class="w-5 h-5 mr-2"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"
+                      />
+                    </svg>
+                    WhatsApp
+                  </a>
+                  <button
+                    @click="deleteOrder()"
+                    class="px-6 py-3 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition flex items-center justify-center"
+                    title="Hapus Pesanan"
+                  >
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

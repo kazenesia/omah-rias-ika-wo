@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% block title %}Booking — Omah Rias Ika{% endblock %}
+
+{% block content %}
+<section class="pt-28 pb-20 min-h-screen bg-gradient-to-b from-blush/30 to-cream">
+  <div class="max-w-3xl mx-auto px-4" x-data="bookingForm()">
+    <div class="text-center mb-10 reveal">
+      <span class="section-label mb-3">Booking</span>
+      <h1 class="font-display text-3xl md:text-4xl font-bold text-espresso">Form <span class="accent-text">Pemesanan</span></h1>
+      <p class="text-espresso-muted mt-2">Lengkapi data untuk konsultasi dan pemesanan</p>
+    </div>
+
+    <!-- Progress -->
+    <div class="mb-8 reveal">
+      <div class="flex justify-between text-sm text-espresso-muted mb-2">
+        <span>Langkah <span x-text="currentStep"></span> / <span x-text="totalSteps"></span></span>
+        <span class="text-wine font-medium" x-text="Math.round(progress) + '%'"></span>
+      </div>
+      <div class="h-2 bg-cream-dark rounded-full overflow-hidden">
+        <div class="h-full bg-gradient-to-r from-wine to-rosegold rounded-full transition-all duration-500" :style="'width:' + progress + '%'"></div>
+      </div>
+      <div class="flex justify-between mt-4">
+        {% for step in steps %}
+        <div class="flex flex-col items-center">
+          <div :class="currentStep >= {{ step.num }} ? 'bg-wine text-white' : 'bg-cream-dark text-espresso-muted'" class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition">{{ step.num }}</div>
+          <span class="text-xs mt-1 text-espresso-muted hidden sm:block">{{ step.label }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card p-6 sm:p-8 reveal">
+      <!-- Step 1 -->
+      <div x-show="currentStep === 1" x-transition>
+        <h2 class="font-display text-2xl text-espresso mb-6">Data Kontak</h2>
+        <div class="space-y-5">
+          <div>
+            <label class="block text-sm font-medium mb-2">Nama Lengkap *</label>
+            <input type="text" x-model="formData.name" class="form-input" placeholder="Budi Santoso & Putri Ayu" />
+            <p x-show="errors.name" x-text="errors.name" class="text-error text-sm mt-1"></p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Nomor WhatsApp *</label>
+            <input type="tel" x-model="formData.whatsapp" @input="formatPhoneNumber($event.target)" class="form-input" placeholder="628123456789" />
+            <p class="text-espresso-muted text-xs mt-1">Format: 628xxxxxxxxxx</p>
+            <p x-show="errors.whatsapp" x-text="errors.whatsapp" class="text-error text-sm mt-1"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div x-show="currentStep === 2" x-transition>
+        <h2 class="font-display text-2xl text-espresso mb-6">Detail Acara</h2>
+        <div class="space-y-5">
+          <div>
+            <label class="block text-sm font-medium mb-2">Tanggal Acara *</label>
+            <input type="date" x-model="formData.eventDate" class="form-input" :min="new Date().toISOString().split('T')[0]" />
+            <p x-show="errors.eventDate" x-text="errors.eventDate" class="text-error text-sm mt-1"></p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Lokasi Venue *</label>
+            <input type="text" x-model="formData.venue" class="form-input" placeholder="Hotel / Gedung / Rumah" />
+            <p x-show="errors.venue" x-text="errors.venue" class="text-error text-sm mt-1"></p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Jumlah Tamu *</label>
+            <select x-model="formData.guestCount" class="form-input">
+              <option value="">Pilih perkiraan</option>
+              <option value="50-100">50 - 100 tamu</option>
+              <option value="100-200">100 - 200 tamu</option>
+              <option value="200-300">200 - 300 tamu</option>
+              <option value="300-500">300 - 500 tamu</option>
+              <option value="500+">500+ tamu</option>
+            </select>
+            <p x-show="errors.guestCount" x-text="errors.guestCount" class="text-error text-sm mt-1"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div x-show="currentStep === 3" x-transition>
+        <h2 class="font-display text-2xl text-espresso mb-6">Pilih Paket</h2>
+        <div class="space-y-3">
+          {% for pkg in packages %}
+          <label class="block cursor-pointer">
+            <input type="radio" x-model="formData.selectedPackage" value="{{ pkg.slug }}" class="hidden peer" />
+            <div class="p-4 rounded-xl border-2 border-cream-dark peer-checked:border-wine peer-checked:bg-blush/50 transition relative">
+              {% if pkg.is_popular %}<span class="absolute -top-2 right-4 bg-rosegold text-white text-xs px-2 py-0.5 rounded-full">Populer</span>{% endif %}
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <img src="{{ pkg.icon }}" alt="" class="w-6 h-6" />
+                  <div>
+                    <h3 class="font-semibold text-espresso">{{ pkg.name }}</h3>
+                    <p class="text-sm text-espresso-muted">{{ pkg.description|truncatewords:8 }}</p>
+                  </div>
+                </div>
+                <span class="font-bold text-wine text-sm">{% if pkg.price %}Rp {{ pkg.price|floatformat:0 }}{% else %}Konsultasi{% endif %}</span>
+              </div>
+            </div>
+          </label>
+          {% endfor %}
+        </div>
+        <p x-show="errors.selectedPackage" x-text="errors.selectedPackage" class="text-error text-sm mt-2"></p>
+        <div class="mt-5">
+          <label class="block text-sm font-medium mb-2">Catatan (opsional)</label>
+          <textarea x-model="formData.notes" rows="3" class="form-input" placeholder="Permintaan khusus..."></textarea>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div x-show="currentStep === 4" x-transition>
+        <h2 class="font-display text-2xl text-espresso mb-6">Review Data</h2>
+        <div class="bg-blush/40 rounded-xl p-6 space-y-3 text-sm">
+          <div class="flex justify-between py-2 border-b border-wine/10"><span class="text-espresso-muted">Nama</span><span class="font-medium" x-text="formData.name"></span></div>
+          <div class="flex justify-between py-2 border-b border-wine/10"><span class="text-espresso-muted">WhatsApp</span><span class="font-medium" x-text="'+' + formData.whatsapp"></span></div>
+          <div class="flex justify-between py-2 border-b border-wine/10"><span class="text-espresso-muted">Tanggal</span><span class="font-medium" x-text="formData.eventDate"></span></div>
+          <div class="flex justify-between py-2 border-b border-wine/10"><span class="text-espresso-muted">Venue</span><span class="font-medium" x-text="formData.venue"></span></div>
+          <div class="flex justify-between py-2 border-b border-wine/10"><span class="text-espresso-muted">Tamu</span><span class="font-medium" x-text="formData.guestCount"></span></div>
+          <div class="flex justify-between py-2"><span class="text-espresso-muted">Paket</span><span class="font-medium capitalize" x-text="formData.selectedPackage"></span></div>
+        </div>
+      </div>
+
+      <!-- Nav buttons -->
+      <div class="flex justify-between mt-8 pt-6 border-t border-cream-dark">
+        <button x-show="currentStep > 1" @click="prevStep()" class="btn-outline-dark px-6 py-2.5 text-sm">Kembali</button>
+        <div x-show="currentStep === 1"></div>
+        <button x-show="currentStep < totalSteps" @click="nextStep()" class="btn-primary px-8 py-2.5 text-sm ml-auto">Lanjut</button>
+        <button x-show="currentStep === totalSteps" @click="submitForm()" :disabled="isSubmitting" class="btn-primary px-8 py-2.5 text-sm ml-auto disabled:opacity-50">
+          <span x-show="!isSubmitting">Kirim Booking</span>
+          <span x-show="isSubmitting">Mengirim...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

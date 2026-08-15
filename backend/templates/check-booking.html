@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}Cek Booking — Omah Rias Ika{% endblock %}
+
+{% block content %}
+<section class="pt-28 pb-20 min-h-screen bg-gradient-to-b from-blush/30 to-cream" x-data="bookingCheck()" @keydown.escape.window="handleKeydown($event)">
+  <div class="max-w-lg mx-auto px-4">
+    <div class="text-center mb-10 reveal">
+      <div class="w-20 h-20 mx-auto bg-blush rounded-full flex items-center justify-center mb-6">
+        <img src="/static/assets/icon/glass.png" alt="" class="w-10 h-10" />
+      </div>
+      <h1 class="font-display text-3xl md:text-4xl font-bold text-espresso">Cek <span class="accent-text">Booking</span></h1>
+      <p class="text-espresso-muted mt-2">Lacak status dan progress booking Anda</p>
+    </div>
+
+    <div class="card p-8 reveal">
+      <div class="space-y-5">
+        <div>
+          <label class="block text-sm font-medium mb-2">Nomor WhatsApp</label>
+          <input type="tel" x-model="whatsapp" class="form-input" placeholder="628123456789" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-2">Kode Booking</label>
+          <input type="text" x-model="bookingCode" class="form-input uppercase" placeholder="WO-XXXXXX" />
+        </div>
+        <div x-show="error" x-cloak class="p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm" x-text="error"></div>
+        <button @click="checkBooking()" :disabled="isLoading" class="btn-primary w-full py-4 disabled:opacity-50">
+          <span x-show="!isLoading">Cek Status</span>
+          <span x-show="isLoading">Mencari...</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="mt-8 text-center reveal">
+      <p class="text-espresso-muted text-sm mb-2">Lupa kode booking?</p>
+      <a href="https://wa.me/6281234567890" target="_blank" class="text-sage font-medium hover:text-wine transition text-sm">Hubungi Omah Rias Ika via WhatsApp</a>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div x-show="showModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay" @click.self="closeModal()">
+    <div x-show="showModal" x-transition class="bg-white rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
+      <div class="p-6 border-b flex justify-between items-center">
+        <h2 class="font-display text-2xl font-bold text-espresso">Progress Booking</h2>
+        <button @click="closeModal()" class="p-2 hover:bg-blush rounded-full">&times;</button>
+      </div>
+      <div class="p-6 overflow-y-auto flex-1">
+        <div class="bg-blush rounded-2xl p-4 mb-6">
+          <div class="flex justify-between mb-2"><span class="text-sm text-espresso-muted">Kode</span><span class="font-bold text-wine" x-text="bookingCode.toUpperCase()"></span></div>
+          <div class="flex justify-between"><span class="text-sm text-espresso-muted">Nama</span><span class="font-medium" x-text="bookingData?.name"></span></div>
+        </div>
+
+        <h3 class="font-semibold mb-4">Status Progress</h3>
+        <div class="space-y-4 mb-8">
+          <template x-for="step in statusSteps" :key="step.id">
+            <div class="flex items-center gap-3">
+              <div :class="step.completed || step.current ? 'bg-wine text-white' : 'bg-cream-dark text-espresso-muted'" class="w-9 h-9 rounded-full flex items-center justify-center text-sm">
+                <span x-show="step.completed">✓</span>
+                <span x-show="!step.completed" x-text="step.icon"></span>
+              </div>
+              <div>
+                <p :class="step.current ? 'text-wine font-medium' : 'text-espresso-muted'" x-text="step.label"></p>
+                <p x-show="step.current" class="text-rosegold text-xs">Status saat ini</p>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <div class="bg-cream rounded-2xl p-5">
+          <h3 class="font-semibold mb-3">Pembayaran</h3>
+          <div class="space-y-2 text-sm">
+            <div class="flex justify-between"><span class="text-espresso-muted">Paket</span><span x-text="bookingData?.package"></span></div>
+            <div class="flex justify-between"><span class="text-espresso-muted">Total</span><span x-text="formatCurrency(bookingData?.totalAmount)"></span></div>
+            <div class="flex justify-between"><span class="text-espresso-muted">Dibayar</span><span class="text-sage" x-text="formatCurrency(bookingData?.paidAmount)"></span></div>
+            <div class="flex justify-between pt-2 border-t font-bold"><span>Sisa</span><span class="text-wine" x-text="formatCurrency((bookingData?.totalAmount||0)-(bookingData?.paidAmount||0))"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

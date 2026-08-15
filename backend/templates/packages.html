@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Paket Pernikahan — Omah Rias Ika{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="page-hero-pattern"></div>
+  <div class="relative z-10 max-w-7xl mx-auto px-4 text-center">
+    <span class="section-label mb-4 text-rosegold-light">Paket</span>
+    <h1 class="font-display text-4xl md:text-5xl font-bold text-white mb-4">Paket <span class="text-rosegold">Pernikahan</span></h1>
+    <p class="text-white/60 max-w-xl mx-auto">Pilih paket yang sesuai dengan impian dan budget Anda</p>
+      </div>
+    </section>
+
+<section class="py-20 bg-cream">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+      {% for pkg in packages %}
+      <div class="card p-8 flex flex-col {% if pkg.is_popular %}package-popular mt-4{% endif %} reveal">
+        <div class="w-14 h-14 rounded-2xl bg-blush flex items-center justify-center mb-6">
+          <img src="{{ pkg.icon }}" alt="" class="w-8 h-8" />
+        </div>
+        <h3 class="font-display text-2xl font-bold text-espresso mb-2">{{ pkg.name }}</h3>
+        <p class="text-espresso-muted text-sm mb-4 flex-grow">{{ pkg.description }}</p>
+        {% if pkg.price %}
+        <p class="font-display text-3xl text-wine mb-1">Rp {{ pkg.price|floatformat:0 }}</p>
+        {% else %}
+        <p class="font-display text-2xl text-wine mb-1 italic">Konsultasi</p>
+        {% endif %}
+
+        <ul class="space-y-2 my-6 text-sm text-espresso-muted">
+          {% for feature in pkg.features %}
+          <li class="flex gap-2"><span class="text-sage">✓</span> {{ feature }}</li>
+          {% endfor %}
+        </ul>
+
+        <a href="/booking/?package={{ pkg.slug }}" class="btn-primary w-full py-3 text-center text-sm mt-auto">Pilih Paket</a>
+      </div>
+      {% empty %}
+      <p class="col-span-full text-center text-espresso-muted py-12">Paket belum tersedia.</p>
+      {% endfor %}
+        </div>
+      </div>
+    </section>
+
+<section class="py-16 bg-blush/30">
+  <div class="max-w-3xl mx-auto px-4 text-center reveal">
+    <h2 class="font-display text-3xl font-bold text-espresso mb-4">Butuh Paket Custom?</h2>
+    <p class="text-espresso-muted mb-8">Konsultasi gratis untuk merancang paket sesuai kebutuhan unik Anda.</p>
+    <a href="/booking/?package=custom" class="btn-outline-dark px-8 py-3 inline-block">Konsultasi Gratis</a>
+      </div>
+    </section>
+{% endblock %}

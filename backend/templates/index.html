@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+
+{% block title %}Omah Rias Ika — Wedding Organizer & Rias Pengantin{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="relative min-h-screen flex items-center overflow-hidden">
+  <div class="absolute inset-0 bg-cover bg-center scale-105" style="background-image: url('/static/assets/background/couple.webp');">
+    <div class="absolute inset-0 hero-overlay"></div>
+  </div>
+
+  <div class="absolute top-1/4 -left-20 w-72 h-72 rounded-full bg-rosegold/10 blur-3xl"></div>
+  <div class="absolute bottom-1/4 -right-20 w-96 h-96 rounded-full bg-wine/20 blur-3xl"></div>
+
+  <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20 w-full">
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+      <div>
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur border border-white/20 mb-8 fade-in-up">
+          <span class="w-2 h-2 rounded-full bg-rosegold pulse-wine"></span>
+          <span class="text-sm font-medium text-white/90 tracking-wide">Rias Pengantin & WO Terpercaya</span>
+        </div>
+
+        <h1 class="font-display text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.1] mb-6 fade-in-up delay-100">
+          Merias<br />
+          <span class="accent-text italic">Impian</span> Anda
+        </h1>
+
+        <p class="text-lg text-white/75 max-w-lg mb-10 leading-relaxed fade-in-up delay-200">
+          Omah Rias Ika menghadirkan pengalaman pernikahan yang hangat, elegan, dan penuh makna — dari rias pengantin hingga koordinasi acara lengkap.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4 fade-in-up delay-300">
+          <a href="/booking/" class="btn-primary px-8 py-4 text-base inline-flex items-center justify-center gap-2">
+            Mulai Konsultasi
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </a>
+          <a href="/paket/" class="btn-outline px-8 py-4 text-base text-center">Lihat Paket</a>
+        </div>
+      </div>
+
+      <div class="hidden lg:grid grid-cols-2 gap-4 fade-in-up delay-400">
+        <div class="space-y-4 pt-8">
+          <div class="rounded-4xl overflow-hidden shadow-lg hover-lift h-52"><img src="/static/assets/background/wedding-bouquet.png" alt="" class="w-full h-full object-cover" /></div>
+          <div class="rounded-4xl overflow-hidden shadow-lg hover-lift h-64"><img src="/static/assets/background/wedding-rings.png" alt="" class="w-full h-full object-cover" /></div>
+        </div>
+        <div class="space-y-4">
+          <div class="rounded-4xl overflow-hidden shadow-lg hover-lift h-64"><img src="/static/assets/background/wedding-venue.png" alt="" class="w-full h-full object-cover" /></div>
+          <div class="rounded-4xl overflow-hidden shadow-lg hover-lift h-52"><img src="/static/assets/background/wedding-cake.png" alt="" class="w-full h-full object-cover" /></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-3 gap-6 max-w-2xl mt-16 fade-in-up delay-500">
+      <div class="text-center p-4 rounded-2xl bg-white/5 backdrop-blur border border-white/10">
+        <div class="font-display text-3xl md:text-4xl font-bold text-rosegold">500+</div>
+        <div class="text-xs text-white/60 mt-1 uppercase tracking-wider">Pernikahan</div>
+      </div>
+      <div class="text-center p-4 rounded-2xl bg-white/5 backdrop-blur border border-white/10">
+        <div class="font-display text-3xl md:text-4xl font-bold text-rosegold">50+</div>
+        <div class="text-xs text-white/60 mt-1 uppercase tracking-wider">Vendor</div>
+      </div>
+      <div class="text-center p-4 rounded-2xl bg-white/5 backdrop-blur border border-white/10">
+        <div class="font-display text-3xl md:text-4xl font-bold text-rosegold">10+</div>
+        <div class="text-xs text-white/60 mt-1 uppercase tracking-wider">Tahun</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 float text-rosegold">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+  </div>
+</section>
+
+<!-- About -->
+<section class="py-24 md:py-32 bg-cream">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid lg:grid-cols-2 gap-16 items-center">
+      <div class="reveal">
+        <span class="section-label mb-4">Tentang Kami</span>
+        <h2 class="font-display text-4xl md:text-5xl font-bold text-espresso mb-6 leading-tight">
+          Rumah untuk <span class="accent-text">Rias</span> &amp; Perayaan
+        </h2>
+        <p class="text-espresso-muted text-lg leading-relaxed mb-8">
+          Omah Rias Ika lahir dari passion akan kecantikan pengantin dan kehangatan perayaan keluarga. Kami menggabungkan keahlian rias tradisional-modern dengan koordinasi WO profesional.
+        </p>
+        <div class="space-y-5">
+          {% for item in highlights %}
+          <div class="flex gap-4 items-start">
+            <div class="w-10 h-10 rounded-full bg-blush flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-wine" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <p class="text-espresso-muted pt-2">{{ item }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="relative reveal">
+        <div class="absolute -inset-4 bg-gradient-to-br from-blush to-rosegold/20 rounded-4xl -rotate-2"></div>
+        <img src="/static/assets/background/groombride.webp" alt="Pengantin Omah Rias Ika" class="relative rounded-4xl shadow-lg w-full object-cover aspect-[4/5]" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Services -->
+<section class="py-24 md:py-32 relative overflow-hidden">
+  <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('/static/assets/background/decoration.webp');">
+    <div class="absolute inset-0 bg-espresso/85"></div>
+  </div>
+
+  <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16 reveal">
+      <span class="section-label mb-4 text-rosegold-light">Layanan</span>
+      <h2 class="font-display text-4xl md:text-5xl font-bold text-white mb-4">Satu Atap, <span class="text-rosegold">Lengkap</span></h2>
+      <p class="text-white/60 max-w-xl mx-auto">Semua kebutuhan pernikahan Anda dalam satu tim terpercaya</p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {% for svc in services %}
+      <a href="{{ svc.url }}" class="card-glass p-6 group reveal block">
+        <div class="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+          <img src="{{ svc.icon }}" alt="" class="w-8 h-8" />
+        </div>
+        <h3 class="font-display text-xl text-white mb-2">{{ svc.name }}</h3>
+        <p class="text-white/55 text-sm leading-relaxed">{{ svc.desc }}</p>
+        <span class="inline-flex items-center gap-1 text-rosegold text-sm font-medium mt-4 group-hover:gap-2 transition-all">
+          Lihat <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Packages preview -->
+<section class="py-24 md:py-32 bg-blush/40">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16 reveal">
+      <span class="section-label mb-4">Paket</span>
+      <h2 class="font-display text-4xl md:text-5xl font-bold text-espresso">Pilih Paket <span class="accent-text">Anda</span></h2>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-8">
+      {% for pkg in packages %}
+      <div class="card p-8 {% if pkg.is_popular %}package-popular mt-4{% endif %} reveal relative">
+        <div class="w-12 h-12 rounded-2xl bg-blush flex items-center justify-center mb-5">
+          <img src="{{ pkg.icon }}" alt="" class="w-7 h-7" />
+        </div>
+        <h3 class="font-display text-2xl font-bold text-espresso mb-2">{{ pkg.name }}</h3>
+        <p class="text-espresso-muted text-sm mb-4">{{ pkg.description }}</p>
+        {% if pkg.price %}
+        <p class="font-display text-3xl text-wine mb-6">Rp {{ pkg.price|floatformat:0 }}</p>
+        {% else %}
+        <p class="font-display text-2xl text-wine mb-6 italic">Konsultasi</p>
+        {% endif %}
+        <a href="/booking/?package={{ pkg.slug }}" class="btn-outline-dark w-full py-3 text-center block text-sm">Pilih Paket</a>
+      </div>
+      {% empty %}
+      <div class="col-span-3 text-center text-espresso-muted reveal">Paket segera tersedia.</div>
+      {% endfor %}
+    </div>
+
+    <div class="text-center mt-12 reveal">
+      <a href="/paket/" class="btn-primary px-8 py-3 inline-block">Lihat Semua Paket</a>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="py-24 md:py-32 bg-cream">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16 reveal">
+      <span class="section-label mb-4">Testimoni</span>
+      <h2 class="font-display text-4xl md:text-5xl font-bold text-espresso">Kata Mereka</h2>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-8">
+      {% for t in testimonials %}
+      <div class="card p-8 reveal">
+        <div class="flex gap-1 mb-4 text-rosegold">{% for i in "12345" %}<svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>{% endfor %}</div>
+        <p class="text-espresso-muted italic leading-relaxed mb-6">"{{ t.quote }}"</p>
+        <p class="font-semibold text-espresso">{{ t.name }}</p>
+        <p class="text-sm text-espresso-muted/70">{{ t.event }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="py-20 relative overflow-hidden">
+  <div class="absolute inset-0 bg-gradient-to-r from-wine-dark via-wine to-espresso"></div>
+  <div class="page-hero-pattern absolute inset-0"></div>
+  <div class="relative z-10 max-w-3xl mx-auto px-4 text-center reveal">
+    <h2 class="font-display text-4xl md:text-5xl font-bold text-white mb-6">Siap Merayakan Hari Bahagia?</h2>
+    <p class="text-white/70 mb-10 text-lg">Konsultasi gratis — ceritakan visi pernikahan Anda kepada kami.</p>
+    <a href="/booking/" class="btn-primary px-10 py-4 text-lg inline-block">Booking Sekarang</a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,21 @@
+# Nerra.id Agentic Framework
+.tmp/
+.env
+credentials.json
+token.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+
+# Django
+backend/db.sqlite3
+backend/media/
+
+# OS
+.DS_Store
+Thumbs.db

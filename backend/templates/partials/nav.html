@@ -1,0 +1,47 @@
+<nav
+  class="fixed top-0 left-0 right-0 z-50 nav-glass"
+  x-data="{ mobileOpen: false, scrolled: false }"
+  @scroll.window="scrolled = window.scrollY > 40"
+  :class="scrolled ? 'scrolled' : ''"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-20">
+      <a href="/" class="flex items-center gap-3 group">
+        <img
+          src="/static/assets/logo/logo-angen2-wo3.webp"
+          alt="Omah Rias Ika"
+          class="h-11 w-auto object-contain transition-transform group-hover:scale-105"
+        />
+        <div class="flex flex-col leading-tight">
+          <span class="font-display font-bold text-xl text-espresso tracking-wide">Omah Rias Ika</span>
+          <span class="text-[11px] font-medium text-rosegold tracking-[0.25em] uppercase">Wedding Organizer</span>
+        </div>
+      </a>
+
+      <div class="hidden md:flex items-center gap-8">
+        <a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">Beranda</a>
+        <a href="/katalog/" class="nav-link {% if '/katalog' in request.path %}active{% endif %}">Katalog</a>
+        <a href="/paket/" class="nav-link {% if '/paket' in request.path %}active{% endif %}">Paket</a>
+        <a href="/cek-booking/" class="nav-link {% if '/cek-booking' in request.path %}active{% endif %}">Cek Booking</a>
+        <a href="/booking/" class="btn-primary px-6 py-2.5 text-sm">Booking Sekarang</a>
+      </div>
+
+      <button @click="mobileOpen = !mobileOpen" class="md:hidden p-2 text-espresso" aria-label="Menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path x-show="!mobileOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          <path x-show="mobileOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <div x-show="mobileOpen" x-transition class="md:hidden pb-5 border-t border-wine/10 pt-4">
+      <div class="flex flex-col gap-1">
+        <a href="/" class="py-2.5 px-3 rounded-lg hover:bg-blush font-medium">Beranda</a>
+        <a href="/katalog/" class="py-2.5 px-3 rounded-lg hover:bg-blush text-espresso-muted">Katalog</a>
+        <a href="/paket/" class="py-2.5 px-3 rounded-lg hover:bg-blush text-espresso-muted">Paket</a>
+        <a href="/cek-booking/" class="py-2.5 px-3 rounded-lg hover:bg-blush text-espresso-muted">Cek Booking</a>
+        <a href="/booking/" class="btn-primary text-center py-3 mt-2 text-sm">Booking Sekarang</a>
+      </div>
+    </div>
+  </div>
+</nav>

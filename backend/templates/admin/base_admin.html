@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Admin — Omah Rias Ika{% endblock %}</title>
+  {% include 'partials/tailwind_config.html' %}
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/styles.css" />
+  {% block extra_head %}{% endblock %}
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="font-body bg-cream text-espresso" x-data="{ sidebarOpen: false, currentPage: '{% block current_page %}dashboard{% endblock %}' }">
+  <div class="min-h-screen flex">
+    <div x-show="sidebarOpen" @click="sidebarOpen=false" class="fixed inset-0 bg-black/50 z-40 lg:hidden" x-transition></div>
+
+    <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'" class="fixed lg:static inset-y-0 left-0 w-64 admin-sidebar text-white z-50 transition-transform duration-300 flex flex-col">
+      <div class="p-5 border-b border-white/10">
+        <span class="font-display text-xl font-bold text-rosegold-light">Omah Rias Ika</span>
+        <p class="text-white/40 text-xs mt-1 tracking-wider uppercase">Admin Panel</p>
+      </div>
+      <nav class="p-4 space-y-1 flex-1">
+        {% for item in nav_items %}
+        <a href="{{ item.url }}" :class="currentPage === '{{ item.id }}' ? 'admin-nav-active' : 'text-white/60 hover:text-white hover:bg-white/5'" class="flex items-center gap-3 px-4 py-3 rounded-lg transition text-sm">
+          <span>{{ item.icon }}</span><span>{{ item.label }}</span>
+        </a>
+        {% endfor %}
+      </nav>
+      <div class="p-4 border-t border-white/10">
+        <a href="/admin-panel/logout/" class="flex items-center gap-2 text-white/50 hover:text-white text-sm px-4 py-2">Keluar</a>
+      </div>
+    </aside>
+
+    <div class="flex-1 lg:ml-0">
+      <header class="bg-white border-b border-cream-dark px-6 py-4 flex items-center justify-between sticky top-0 z-30">
+        <button @click="sidebarOpen=true" class="lg:hidden p-2">☰</button>
+        <h1 class="font-display text-xl font-bold text-espresso">{% block page_heading %}Dashboard{% endblock %}</h1>
+        <a href="/" class="text-sm text-espresso-muted hover:text-wine transition">← Website</a>
+      </header>
+      <main class="p-6">{% block content %}{% endblock %}</main>
+    </div>
+  </div>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

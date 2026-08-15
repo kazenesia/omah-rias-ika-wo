@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}Katalog Vendor — Omah Rias Ika{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="page-hero-pattern"></div>
+  <div class="relative z-10 max-w-7xl mx-auto px-4 text-center">
+    <span class="section-label mb-4 text-rosegold-light">Vendor</span>
+    <h1 class="font-display text-4xl md:text-5xl font-bold text-white mb-4">Katalog <span class="text-rosegold">Terpercaya</span></h1>
+    <p class="text-white/60 max-w-xl mx-auto">Pilih vendor terbaik untuk hari spesial Anda</p>
+      </div>
+    </section>
+
+<section class="py-16" x-data="catalogFilter()">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-wrap justify-center gap-3 mb-12 reveal">
+          <template x-for="category in categories" :key="category.id">
+        <button @click="setCategory(category.id)"
+          :class="activeCategory === category.id ? 'bg-wine text-white shadow-md' : 'bg-white text-espresso-muted hover:bg-blush'"
+          class="px-5 py-2.5 rounded-full font-medium transition-all flex items-center gap-2 text-sm">
+          <img :src="category.iconPath" :alt="category.name" class="w-4 h-4" />
+              <span x-text="category.name"></span>
+            </button>
+          </template>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {% for vendor in vendors %}
+      <div x-show="isVisible('{{ vendor.category }}')" x-transition class="card overflow-hidden group reveal">
+        <div class="h-48 bg-gradient-to-br from-blush to-cream-dark relative overflow-hidden">
+          {% if vendor.image %}
+          <img src="{{ vendor.image.url }}" alt="{{ vendor.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          {% else %}
+          <div class="w-full h-full flex items-center justify-center">
+            <img src="/static/assets/icon/cosmetics.png" alt="" class="w-16 h-16 opacity-40" />
+          </div>
+          {% endif %}
+          <span class="absolute top-3 right-3 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-semibold text-wine">{{ vendor.get_category_display }}</span>
+            </div>
+            <div class="p-5">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="font-display text-xl font-semibold text-espresso">{{ vendor.name }}</h3>
+            <span class="text-rosegold text-sm font-medium">★ {{ vendor.rating }}</span>
+          </div>
+          <p class="text-espresso-muted text-sm mb-4 line-clamp-2">{{ vendor.description|default:"Vendor terpercaya Omah Rias Ika." }}</p>
+              <div class="flex items-center justify-between">
+            <span class="text-wine font-bold text-sm">{% if vendor.price_range %}Rp {{ vendor.price_range }}{% else %}Hubungi Kami{% endif %}</span>
+            <a href="/booking/" class="text-rosegold text-sm font-medium hover:text-wine transition">Pilih →</a>
+          </div>
+        </div>
+          </div>
+      {% empty %}
+      <p class="col-span-full text-center text-espresso-muted py-12 reveal">Belum ada vendor. Segera hadir.</p>
+      {% endfor %}
+        </div>
+      </div>
+    </section>
+{% endblock %}

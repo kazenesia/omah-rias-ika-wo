@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gallery - Admin Omah Rias Ika</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              gold: {
+                50: "#FDF8E6",
+                100: "#FBF1CD",
+                200: "#F6E39B",
+                300: "#F1D569",
+                400: "#D4AF37" /* Base Champagne Gold */,
+                500: "#B38F24",
+                600: "#92741D",
+              },
+              charcoal: "#062D24" /* Deep Emerald */,
+              "warm-white": "#FDFCF8" /* Ivory Silk */,
+              "white-smoke": "#F5F5F5",
+              slate: "#2C3E50" /* Midnight Slate */,
+            },
+            fontFamily: {
+              display: ["Playfair Display", "serif"],
+              body: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #D4AF37;
+        border-radius: 10px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #B38F24;
+      }
+    </style>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+
+  <body class="font-body bg-cream text-espresso" x-data="adminGallery()">
+    <div class="min-h-screen">
+      <!-- Mobile Sidebar Overlay -->
+      <div
+        x-show="sidebarOpen"
+        x-transition:enter="transition-opacity ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition-opacity ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 bg-black/50 z-40 lg:hidden"
+        @click="sidebarOpen = false"
+      ></div>
+
+      <!-- Sidebar -->
+      <aside
+        :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
+        class="fixed top-0 left-0 h-full w-64 admin-sidebar text-white z-50 transition-transform duration-300 lg:translate-x-0"
+      >
+        <!-- Logo -->
+        <div
+          class="p-4 border-b border-charcoal/20 flex items-center justify-between"
+        >
+          <div class="flex items-center space-x-2">
+            <span class="text-2xl">💒</span>
+            <span class="font-display text-xl font-bold text-rosegold-light"
+              >Omah Rias Ika</span
+            >
+          </div>
+          <button
+            @click="sidebarOpen = false"
+            class="lg:hidden p-1 hover:bg-gray-700 rounded"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="p-4 space-y-2">
+          <a
+            href="/admin-panel/dashboard/"
+            :class="currentPage === 'dashboard' ? 'bg-wine/20 text-rosegold-light' : 'text-slate-300 hover:bg-wine/10 hover:text-gold-100 transition'"
+            class="flex items-center space-x-3 px-4 py-3 rounded-xl"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              />
+            </svg>
+            <span>Dashboard</span>
+          </a>
+          <a
+            href="/admin-panel/orders/"
+            :class="currentPage === 'orders' ? 'bg-wine/20 text-rosegold-light' : 'text-slate-300 hover:bg-wine/10 hover:text-gold-100 transition'"
+            class="flex items-center space-x-3 px-4 py-3 rounded-xl"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+              />
+            </svg>
+            <span>Orders</span>
+          </a>
+          <a
+            href="/admin-panel/catalog/"
+            :class="currentPage === 'catalog' ? 'bg-wine/20 text-rosegold-light' : 'text-slate-300 hover:bg-wine/10 hover:text-gold-100 transition'"
+            class="flex items-center space-x-3 px-4 py-3 rounded-xl"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+              />
+            </svg>
+            <span>Katalog</span>
+          </a>
+          <a
+            href="/admin-panel/packages/"
+            :class="currentPage === 'packages' ? 'bg-wine/20 text-rosegold-light' : 'text-slate-300 hover:bg-wine/10 hover:text-gold-100 transition'"
+            class="flex items-center space-x-3 px-4 py-3 rounded-xl"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+              />
+            </svg>
+            <span>Paket</span>
+          </a>
+          <a
+            href="/admin-panel/gallery/"
+            :class="currentPage === 'gallery' ? 'bg-wine/20 text-rosegold-light' : 'text-slate-300 hover:bg-wine/10 hover:text-gold-100 transition'"
+            class="flex items-center space-x-3 px-4 py-3 rounded-xl"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+            <span>Gallery</span>
+          </a>
+          <div class="pt-4 mt-4 border-t border-charcoal/20">
+            <form method="post" action="/admin-panel/logout/">
+              {% csrf_token %}
+              <button
+                type="submit"
+                class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-400 hover:bg-red-500/20 hover:text-red-400 transition"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
+                </svg>
+                <span>Logout</span>
+              </button>
+            </form>
+          </div>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="lg:ml-64 min-h-screen">
+        <!-- Top Bar -->
+        <header
+          class="bg-cream shadow-sm sticky top-0 z-20 border-b border-gray-200/50"
+        >
+          <div class="flex items-center justify-between px-4 sm:px-6 py-4">
+            <div class="flex items-center space-x-3">
+              <button
+                @click="sidebarOpen = true"
+                class="lg:hidden p-2 hover:bg-wine/10 rounded-lg transition-colors"
+              >
+                <svg
+                  class="w-6 h-6 text-gray-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
+              </button>
+              <h1 class="text-lg sm:text-xl font-semibold text-espresso">
+                Gallery
+              </h1>
+            </div>
+            <div class="flex items-center space-x-2 sm:space-x-4">
+              <button
+                class="relative p-2 hover:bg-wine/10 rounded-lg transition-colors"
+              >
+                <svg
+                  class="w-5 h-5 text-gray-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                  />
+                </svg>
+                <span
+                  class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"
+                ></span>
+              </button>
+              <div class="flex items-center space-x-2">
+                <div
+                  class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-wine flex items-center justify-center text-white font-semibold text-sm"
+                >
+                  A
+                </div>
+                <span class="hidden sm:block text-sm font-medium text-espresso"
+                  >Admin</span
+                >
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Gallery Content -->
+        <div class="p-6">
+          <!-- Category Tabs -->
+          <div class="flex flex-wrap justify-center gap-2 mb-6">
+            <template x-for="cat in categories" :key="cat.id">
+              <button
+                @click="activeCategory = cat.id"
+                :class="activeCategory === cat.id ? 'bg-wine text-white shadow-lg' : 'bg-white text-gray-600 hover:bg-gold-50'"
+                class="px-5 py-2.5 rounded-full font-medium flex items-center space-x-2 transition shadow-sm"
+              >
+                <img :src="cat.iconPath" class="w-5 h-5 opacity-80" />
+                <span x-text="cat.name"></span>
+              </button>
+            </template>
+          </div>
+
+          <!-- Empty State -->
+          <div x-show="filteredImages.length === 0" class="py-20 text-center">
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">📷</div>
+            <h3 class="text-xl font-semibold text-espresso mb-1">Belum ada foto</h3>
+            <p class="text-gray-500">Foto dari vendor yang diupload di Katalog akan muncul di sini.</p>
+          </div>
+
+          <!-- Items Grid -->
+          <div x-show="filteredImages.length > 0" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <template x-for="image in filteredImages" :key="image.id">
+              <div
+                class="aspect-square bg-gradient-to-br from-gold-100 to-gold-200 rounded-xl flex items-center justify-center relative group overflow-hidden shadow-sm border border-gold-100"
+              >
+                <img :src="image.image" :alt="image.title" class="w-full h-full object-cover transition duration-500 group-hover:scale-110" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
+                  <p class="text-white text-xs font-medium truncate" x-text="image.title"></p>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Data Injection -->
+    <script id="gallery-data" type="application/json">
+      {{ gallery_json|safe }}
+    </script>
+
+    <script>
+      function adminGallery() {
+        return {
+          sidebarOpen: false,
+          currentPage: 'gallery',
+          activeCategory: 'mua',
+          categories: [
+              { id: 'mua', name: 'MUA', iconPath: '/static/assets/icon/cosmetics.png' },
+              { id: 'decoration', name: 'Dekorasi', iconPath: '/static/assets/icon/decoration.png' },
+              { id: 'tent', name: 'Tenda', iconPath: '/static/assets/icon/marquee.png' },
+              { id: 'catering', name: 'Katering', iconPath: '/static/assets/icon/buffet.png' },
+              { id: 'photographer', name: 'Fotografer', iconPath: '/static/assets/icon/photographer.png' },
+              { id: 'music', name: 'Musik', iconPath: '/static/assets/icon/music.png' },
+              { id: 'invitation', name: 'Undangan', iconPath: '/static/assets/icon/invitation.png' },
+              { id: 'gift', name: 'Hantaran', iconPath: '/static/assets/icon/gift.png' }
+          ],
+          items: [],
+
+          init() {
+            try {
+              const dataEl = document.getElementById("gallery-data");
+              if (dataEl) {
+                this.items = JSON.parse(dataEl.textContent);
+              }
+            } catch (e) {
+              console.error("Failed to parse gallery data:", e);
+            }
+          },
+
+          get filteredImages() {
+            return this.items.filter(i => i.category === this.activeCategory);
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

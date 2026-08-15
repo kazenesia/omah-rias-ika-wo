@@ -1,0 +1,26 @@
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          wine: { DEFAULT: "#7A3F4E", dark: "#5C2D3A", light: "#9E5A6B", 50: "#FAF0F2" },
+          rosegold: { DEFAULT: "#C9956C", light: "#E0B88A" },
+          cream: { DEFAULT: "#FAF6F0", dark: "#F0E8DC" },
+          sage: { DEFAULT: "#6B7F6E", light: "#8FA892" },
+          espresso: { DEFAULT: "#2A1F1A", muted: "#4A3F38" },
+          blush: "#F5E6E0",
+          /* legacy aliases */
+          gold: { 400: "#C9956C", 500: "#B38F24", 100: "#FAF0F2" },
+          charcoal: "#2A1F1A",
+          "warm-white": "#FAF6F0",
+        },
+        fontFamily: {
+          display: ["Cormorant Garamond", "serif"],
+          body: ["Outfit", "sans-serif"],
+        },
+        borderRadius: { "4xl": "2rem" },
+      },
+    },
+  };
+</script>
